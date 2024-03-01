@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 import re
 
 
-def get_trending_urls() -> list:
+def scrape_paper_metadata() -> list:
     """Pull the trending papers on the front page of paperswithcode.com"""
 
     # URL to scrape
@@ -18,30 +18,34 @@ def get_trending_urls() -> list:
         # Parse the HTML content of the page using Beautiful Soup
         soup = BeautifulSoup(response.text, "html.parser")
 
-        # Find all 'a' tags (hyperlinks) in the document:
-        links = soup.find_all("a")
+        # Now you can use Beautiful Soup methods to find data in the soup object
+        # For example, to find all 'a' tags (hyperlinks) in the document:
+        a_tags = soup.find_all("a")
 
-        # regex to match link to research papers
         pattern = r"\/paper\/(?!.*(#code|#tasks)$).*$"
         unique_papers = []
+        titles = []
 
-        for link in links:
-            href = link.get("href")
+        for tag in a_tags:
+            href = tag.get("href")
             # Check if the href attribute is a string and if it matches the pattern
-            if isinstance(href, str) and re.search(pattern, href):
+            if isinstance(href, str) and re.search(pattern, href) and tag.text.strip():
                 # If the link is not already in the list, add it
                 if href not in unique_papers:
                     unique_papers.append(href)
+                    titles.append(tag.text)
 
         # Now, unique_papers contains all unique links that include "/paper/"
     else:
         print(f"Failed to retrieve the webpage: HTTP {response.status_code}")
 
-    paper_urls = []
-    for paper in unique_papers:
-        paper_urls.append("https://paperswithcode.com" + paper)
 
-    return paper_urls
+    paper_metadata = []
+    for paper, title in zip(unique_papers, titles):
+        paper_metadata.append({'url': "https://paperswithcode.com" + paper, 'title': title})
+
+
+    return paper_metadata
 
 
 def get_arxiv_link(url: str) -> str:
@@ -79,10 +83,19 @@ def get_arxiv_link(url: str) -> str:
 
     return pdf_link
 
+def get_paper_info() -> list:
+    paper_metadata = scrape_paper_metadata()
 
-def get_paper_list() -> list:
-    paper_urls = get_trending_urls()
-    links = [get_arxiv_link(url) for url in paper_urls]
-    return links
+    for data in paper_metadata:
+        data['arxiv_link'] = get_arxiv_link(data['url'])
 
+    # links = [get_arxiv_link(data['url']) for data in paper_metadata]
+    # titles = [data['title'] for data in paper_metadata]
+    return paper_metadata
+
+# if 'name' == 'main':
+
+#     paper_metadata = get_paper_info()
+#     with open('data/paper_metadata.json', 'w') as file:
+#         json.dump(paper_metadata, file, indent=4)
 
