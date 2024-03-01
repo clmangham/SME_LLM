@@ -2,6 +2,8 @@
 import requests
 from bs4 import BeautifulSoup
 import re
+from langchain_community.retrievers import ArxivRetriever
+
 
 
 def scrape_paper_metadata() -> list:
@@ -84,13 +86,19 @@ def get_arxiv_link(url: str) -> str:
     return pdf_link
 
 def get_paper_info() -> list:
+    retriever = ArxivRetriever(load_max_docs=1)
     paper_metadata = scrape_paper_metadata()
 
     for data in paper_metadata:
         data['arxiv_link'] = get_arxiv_link(data['url'])
 
-    # links = [get_arxiv_link(data['url']) for data in paper_metadata]
-    # titles = [data['title'] for data in paper_metadata]
+        doc_num = data['arxiv_link'].split('/')[-1][:-4]
+        docs = retriever.load(query=doc_num)
+
+        data['published'] = docs[0].metadata['Published']
+        data['authors'] = docs[0].metadata['Authors']
+        data['summary'] = docs[0].metadata['Summary']
+
     return paper_metadata
 
 # if 'name' == 'main':

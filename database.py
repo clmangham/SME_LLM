@@ -11,15 +11,15 @@ def insert_or_update_paper(data):
             # Create table
             c.execute(
                 """CREATE TABLE IF NOT EXISTS papers
-                        (url TEXT PRIMARY KEY, title TEXT, arxiv_link TEXT)"""
+                        (url TEXT PRIMARY KEY, title TEXT, arxiv_link TEXT, published DATE, authors TEXT, summary TEXT )"""
             )
             for paper in data:
                 # Check if the record already exists
                 c.execute("SELECT 1 FROM papers WHERE url = :url", {'url': paper['url']})
                 if not c.fetchone():
                     # Prepare SQL query to insert or replace records
-                    sql_query = """INSERT OR REPLACE INTO papers (url, title, arxiv_link) 
-                                VALUES (:url, :title, :arxiv_link)"""
+                    sql_query = """INSERT OR REPLACE INTO papers (url, title, arxiv_link, published, authors, summary) 
+                                VALUES (:url, :title, :arxiv_link, :published, :authors, :summary)"""
 
                     # Execute SQL query
                     c.execute(sql_query, paper)
