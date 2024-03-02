@@ -3,6 +3,9 @@ import requests
 from bs4 import BeautifulSoup
 import re
 from langchain_community.retrievers import ArxivRetriever
+from database import insert_or_update_database
+import json
+# from tqdm import tqdm
 
 
 
@@ -99,11 +102,21 @@ def get_paper_info() -> list:
         data['authors'] = docs[0].metadata['Authors']
         data['summary'] = docs[0].metadata['Summary']
 
-    return paper_metadata
 
-# if 'name' == 'main':
+    # insert_or_update_database(paper_metadata)
+    # Specify the filename
+    filename = 'data/paper_metadata.json'
 
-#     paper_metadata = get_paper_info()
-#     with open('data/paper_metadata.json', 'w') as file:
-#         json.dump(paper_metadata, file, indent=4)
+    # Write the dictionary to a file
+    with open(filename, 'w') as file:
+        json.dump(paper_metadata, file, indent=4)
+
+    print("Metadata saved!")
+    # return paper_metadata
+
+if __name__ == "__main__":
+    get_paper_info()
+    # paper_metadata = get_paper_info()
+    # with open('data/paper_metadata.json', 'w') as file:
+    #     json.dump(paper_metadata, file, indent=4)
 

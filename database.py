@@ -1,8 +1,8 @@
-from get_data import get_paper_info
+# from get_data import get_paper_info
 import sqlite3
 
 
-def insert_or_update_paper(data):
+def insert_or_update_database(data):
     total_rows_affected = 0  # Initialize a counter to track affected rows
     try:
         # Using a context manager to handle the database connection
@@ -36,4 +36,4 @@ def insert_or_update_paper(data):
     print(f"Total rows affected (inserted or updated): {total_rows_affected}")
 
 # Update data base with new data
-insert_or_update_paper(get_paper_info())
+# insert_or_update_database(get_paper_info())
