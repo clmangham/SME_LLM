@@ -6,6 +6,11 @@ from langchain_community.retrievers import ArxivRetriever
 from database import insert_or_update_database
 import json
 # from tqdm import tqdm
+from langchain_community.document_loaders import PyPDFLoader
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain_openai import OpenAIEmbeddings
+from langchain_community.vectorstores import Chroma
+
 
 
 
@@ -113,8 +118,47 @@ def get_paper_info() -> list:
     print("Metadata saved!")
     # return paper_metadata
 
+
+def create_vector_database():
+    # Specify the filename
+    filename = "data/paper_metadata.json"
+
+    # Write the dictionary to a file
+    with open(filename, "r") as file:
+        paper_metadata = json.load(file)
+
+    # Indexing
+    docs = []
+    for paper in paper_metadata:
+        link = paper["arxiv_link"]
+        loader = PyPDFLoader(link)
+        doc = loader.load_and_split()
+        for idoc in doc:
+            idoc.metadata["title"] = paper["title"]
+            idoc.metadata["published"] = paper["published"]
+            idoc.metadata["authors"] = paper["authors"]
+            idoc.metadata["summary"] = paper["summary"]
+        docs.extend(doc)
+
+    # Text splitting
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+    splits = text_splitter.split_documents(docs)
+
+    #Embed and store the texts
+    # Supplying a persist dicrectory will store the embeddings on disk
+    persist_directory = 'data/vectordb'
+
+    embeddings = OpenAIEmbeddings()
+    # vectordb = Chroma.from_documents(documents=splits, embedding=embeddings, persist_directory=persist_direcory)
+    Chroma.from_documents(documents=splits, embedding=embeddings, persist_directory=persist_directory).persist()
+    # vectordb.persist()
+    print("Vector database saved!")
+
+
+
 if __name__ == "__main__":
     get_paper_info()
+    create_vector_database()
     # paper_metadata = get_paper_info()
     # with open('data/paper_metadata.json', 'w') as file:
     #     json.dump(paper_metadata, file, indent=4)
