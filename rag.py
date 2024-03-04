@@ -73,7 +73,7 @@ def format_docs(docs):
     return "\n\n".join(doc.page_content for doc in docs)
 
 
-def rag():
+def rag(prompt):
     rag_chain = (
         {"context": retriever | format_docs, "question": RunnablePassthrough()}
         | custom_rag_prompt
@@ -81,10 +81,14 @@ def rag():
         | StrOutputParser()
     )
 
-    while (prompt := input("Enter a prompt (q to quit): ")) != "q":
-        result = rag_chain.invoke(prompt)
+    # while (prompt := input("Enter a prompt (q to quit): ")) != "q":
+    #     result = rag_chain.invoke(prompt)
 
-        print("\n" + result)
+    #     print("\n" + result)
+
+    result = rag_chain.invoke(prompt)
+
+    return result
 
 
 if __name__ == "__main__":

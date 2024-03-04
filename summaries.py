@@ -1,6 +1,7 @@
 # from get_data import get_paper_info
 import json
 
+
 def get_summaries():
     # Specify the filename
     filename = "data/paper_metadata.json"
@@ -9,17 +10,27 @@ def get_summaries():
     with open(filename, "r") as file:
         paper_metadata = json.load(file)
 
+    # List for paper summaries
+    paper_summaries = []
+
     i = 0
     for paper in paper_metadata:
         i += 1
-        print("\n" + "Paper #" + str(i) + "\n"  + paper['title'])
-        print(paper['authors'])
-        print(paper['published'])
-        print(paper['arxiv_link'])
+        # Concatenate all the required information into a single string for each paper
+        summary_string = (
+            f"\n#{i}\n{paper['title']}\n"
+            f"\nAuthors: {paper['authors']}\n"
+            f"\nPublished: {paper['published']}\n"
+            f"\nLink to paper: {paper['arxiv_link']}\n"
+            "\nSummary:\n"
+            f"\n{paper['summary']}"
+        )
+        paper_summaries.append(summary_string)
 
-        print("\n" + 'Summary:')
-        print(paper['summary'])
+    return paper_summaries
 
 
 if __name__ == "__main__":
-    get_summaries()
+    summaries = get_summaries()
+    for summary in summaries:
+        print(summary)
