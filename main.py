@@ -1,7 +1,7 @@
-from get_data import get_paper_list
-
-print(get_paper_list())
-
-# Summarize one paper
 
 
+
+
+while (pronpt := input("Enter a prompt (q to quit)")) != "q":
+    result = rag.query(prompt)
+    print(result.content)
