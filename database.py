@@ -1,3 +1,5 @@
+# If decide to continuously expand database of papers
+
 # from get_data import get_paper_info
 import sqlite3
 
