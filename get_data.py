@@ -23,8 +23,8 @@ def scrape_paper_metadata() -> list:
         # Parse the HTML content of the page using Beautiful Soup
         soup = BeautifulSoup(response.text, "html.parser")
 
-        # Now you can use Beautiful Soup methods to find data in the soup object
-        # For example, to find all 'a' tags (hyperlinks) in the document:
+        # Use Beautiful Soup methods to find data in the soup object
+        # Find all 'a' tags (hyperlinks) in the document:
         a_tags = soup.find_all("a")
 
         pattern = r"\/paper\/(?!.*(#code|#tasks)$).*$"
@@ -40,7 +40,6 @@ def scrape_paper_metadata() -> list:
                     unique_papers.append(href)
                     titles.append(tag.text)
 
-        # Now, unique_papers contains all unique links that include "/paper/"
     else:
         print(f"Failed to retrieve the webpage: HTTP {response.status_code}")
 
