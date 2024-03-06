@@ -13,6 +13,8 @@ This project is designed to automate the process of scraping trending research p
 - Q&A on Research Papers: Leverages retrieval-augmented generation (RAG) for question answering based on the paper content.
 
 ## Installation
+**Using python 3.10.13**
+
 ```
 git clone https://github.com/clmangham/SME_LMM.git
 cd SME_LLM
@@ -48,4 +50,4 @@ streamlit run main.py
     - https://mlflow.org/docs/latest/llms/llm-evaluate/index.html
     - https://mlflow.org/docs/latest/llms/prompt-engineering/index.html
 
-- Containerize for consistent development and deployment
+- Containerize and move to local server for development and deployment
