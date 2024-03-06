@@ -10,7 +10,7 @@ def main():
     # --- Streamlit page configuration ---
 
     # Set the title for the Streamlit app
-    st.title("Summary and AI Chat with Trending Research Papers")
+    st.title("Trending Research Papers - Summary and AI Chat")
     st.caption("from https://paperswithcode.com/")
 
     st.write(

@@ -1,4 +1,4 @@
-# Trending Research Paper Scraper and Analyzer
+# Trending Research Papers - Summary and AI Chat
 ##  Project Overview
 
 This project is designed to automate the process of scraping trending research papers from paperswithcode.com, downloading the actual research papers in  the arXiv URLs found in the metadata, and processing this information to generate insights and utility. The paper abstracts are presented on a Streamlit page for easy viewing, while topic modeling techniques are applied to generate relevant keywords for the set of papers Furthermore, the arXiv articles are embedded into a vector database, to facilitate advanced retrieval-augmented generation capabilities.
