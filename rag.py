@@ -91,5 +91,19 @@ def rag(prompt):
     return result
 
 
+def rag_cl():
+    rag_chain = (
+        {"context": retriever | format_docs, "question": RunnablePassthrough()}
+        | custom_rag_prompt
+        | llm
+        | StrOutputParser()
+    )
+
+    while (prompt := input("Enter a prompt (q to quit): ")) != "q":
+        result = rag_chain.invoke(prompt)
+
+        print("\n" + result)
+
+
 if __name__ == "__main__":
-    rag()
+    rag_cl()
