@@ -26,6 +26,7 @@ def main():
     st.divider()
     st.header("Summaries", anchor="summaries", divider="gray")
 
+    # Keywords from topic modeling
     filename = "data/topic_data.pkl"
 
     with open(filename, "rb") as file:

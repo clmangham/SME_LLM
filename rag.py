@@ -16,44 +16,12 @@ import dotenv
 # Load .env
 dotenv.load_dotenv()
 
-# # Specify the filename
-# filename = "data/paper_metadata.json"
-
-# # Write the dictionary to a file
-# with open(filename, "r") as file:
-#     paper_metadata = json.load(file)
-
-# # Indexing
-# docs = []
-# for paper in paper_metadata:
-#     link = paper["arxiv_link"]
-#     loader = PyPDFLoader(link)
-#     doc = loader.load_and_split()
-#     for idoc in doc:
-#         idoc.metadata["title"] = paper["title"]
-#         idoc.metadata["published"] = paper["published"]
-#         idoc.metadata["authors"] = paper["authors"]
-#         idoc.metadata["summary"] = paper["summary"]
-#     docs.extend(doc)
-
-# # Text splitting
-# text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
-# splits = text_splitter.split_documents(docs)
-
-# #Embed and store the texts
-# # Supplying a persist dicrectory will store the embeddings on disk
-# persist_direcory = 'data/vectordb'
-
-# embeddings = OpenAIEmbeddings()
-# vectordb = Chroma.from_documents(documents=splits, embedding=embeddings, persist_directory=persist_direcory)
-# vectordb.persist()
-
-## Load vectorized data
+## Load vectorized data and initialize embeddings.
 persist_directory = "data/vectordb"
 embeddings = OpenAIEmbeddings()
 vectordb = Chroma(persist_directory=persist_directory, embedding_function=embeddings)
 
-# Prompt Template
+# Define a prompt template for the RAG task, outlining how the context and question should be presented.
 template = """You are an assistant for question-answering tasks regarding trending research (the context). Use the following pieces of context to answer the question at the end.
 Provide sources as a list. If you don't know the answer, just say that you don't know, don't try to make up an answer.
 
@@ -64,16 +32,35 @@ Question: {question}
 Helpful Answer:"""
 custom_rag_prompt = PromptTemplate.from_template(template)
 
-# Retrieve and generate using the relevant snippets of the blog.
+# Set up the retriever and language model (LLM) for the RAG system.
 retriever = vectordb.as_retriever(search_kwargs={"k": 10})
 llm = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0)
 
 
 def format_docs(docs):
+    """Formats documents into a single string.
+
+    Args:
+        docs: A list of documents to format.
+
+    Returns:
+        A string containing the formatted documents.
+    """
+
     return "\n\n".join(doc.page_content for doc in docs)
 
 
 def rag(prompt):
+    """Executes a single RAG chain to generate an answer based on a given prompt.
+
+    Args:
+        prompt: The prompt to provide to the RAG system.
+
+    Returns:
+        The generated answer as a string.
+    """
+
+    # Set up the RAG chain, combining the retriever, prompt formatter, LLM, and output parser.
     rag_chain = (
         {"context": retriever | format_docs, "question": RunnablePassthrough()}
         | custom_rag_prompt
@@ -81,17 +68,16 @@ def rag(prompt):
         | StrOutputParser()
     )
 
-    # while (prompt := input("Enter a prompt (q to quit): ")) != "q":
-    #     result = rag_chain.invoke(prompt)
-
-    #     print("\n" + result)
-
     result = rag_chain.invoke(prompt)
 
     return result
 
 
 def rag_cl():
+    """Interactive command-line interface to continuously run the RAG process.
+
+    Prompts the user for questions, retrieves context, and generates answers until the user quits.
+    """
     rag_chain = (
         {"context": retriever | format_docs, "question": RunnablePassthrough()}
         | custom_rag_prompt
@@ -106,4 +92,5 @@ def rag_cl():
 
 
 if __name__ == "__main__":
+    # If this script is executed directly, start the interactive RAG command-line interface.
     rag_cl()
