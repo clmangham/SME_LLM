@@ -2,7 +2,7 @@
 import json
 
 
-def get_summaries():
+def get_summaries() -> list:
     """
     Loads paper metadata from a JSON file and extracts summaries for each paper.
 

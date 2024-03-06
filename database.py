@@ -4,7 +4,7 @@
 import sqlite3
 
 
-def insert_or_update_database(data):
+def insert_or_update_database(paper_metadata):
     """
     Inserts new records or updates existing records in the SQLite database for a collection of research papers.
 
@@ -15,7 +15,7 @@ def insert_or_update_database(data):
     affected by insert or update operations.
 
     Args:
-        data (list of dict): A list of dictionaries where each dictionary contains metadata of a paper, including
+        paper_metadata (list of dict): A list of dictionaries where each dictionary contains metadata of a paper, including
                              its 'url', 'title', 'arxiv_link', 'published', 'authors', and 'summary'.
 
     Prints:
@@ -31,14 +31,14 @@ def insert_or_update_database(data):
                 """CREATE TABLE IF NOT EXISTS papers
                         (url TEXT PRIMARY KEY, title TEXT, arxiv_link TEXT, published DATE, authors TEXT, summary TEXT )"""
             )
-            for paper in data:
+            for paper in paper_metadata:
                 # Check if the record already exists
                 c.execute(
                     "SELECT 1 FROM papers WHERE url = :url", {"url": paper["url"]}
                 )
                 if not c.fetchone():
                     # Prepare SQL query to insert or replace records
-                    sql_query = """INSERT OR REPLACE INTO papers (url, title, arxiv_link, published, authors, summary) 
+                    sql_query = """INSERT OR REPLACE INTO papers (url, title, arxiv_link, published, authors, summary)
                                 VALUES (:url, :title, :arxiv_link, :published, :authors, :summary)"""
 
                     # Execute SQL query
